@@ -1,0 +1,32 @@
+version: "3.4"
+
+services:
+  grafana:
+    container_name: grafana
+    depends_on:
+      - tegrastats
+    environment:
+      - TEGRASTATS_PORT=${TEGRASTATS_PORT}
+    network_mode: host
+    privileged: true
+    restart: on-failure
+
+  tegrastats:
+    build:
+      args:
+        - PIP_NO_CACHE_DIR=${PIP_NO_CACHE_DIR}
+        - PIP_DEFAULT_TIMEOUT=${PIP_DEFAULT_TIMEOUT}
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: tegrastats
+    environment:
+      - PYTHONFAULTHANDLER=${PYTHONFAULTHANDLER}
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+      - PYTHONHASHSEED=${PYTHONHASHSEED}
+      - TZ=${TZ}
+    image: ghcr.io/theia-scientific/tegrastats-grafana:latest
+    network_mode: host
+    privileged: true
+    restart: on-failure
+    volumes:
+      - ./serve.py:/app/serve.py
